@@ -10,7 +10,6 @@ namespace LenusTechTest.Controllers
     public class BookController : ControllerBase
     {
         private readonly BookStoreContext _context;
-        private long _idCount;
 
         public BookController(BookStoreContext context)
         {

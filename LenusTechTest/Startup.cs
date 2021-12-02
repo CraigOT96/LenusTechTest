@@ -29,7 +29,7 @@ namespace LenusTechTest
         {
             services.AddSwaggerGen();
 
-            services.AddDbContext<BookStoreContext>(opt => opt.UseInMemoryDatabase());
+            services.AddDbContext<BookStoreContext>(opt => opt.UseInMemoryDatabase(databaseName: "BookStore"));
 
             services.AddMvc();
         }
@@ -65,7 +65,6 @@ namespace LenusTechTest
 
         private static void AddTestData(BookStoreContext context)
         {
-            context.IdCount = 3;
             context.Books.AddRange(
                     new Book(1, "A. A. Milne", "Winnie-the-Pooh", 19.25),
                     new Book(2, "Jane Austen", "Pride and Prejudice", 5.49),

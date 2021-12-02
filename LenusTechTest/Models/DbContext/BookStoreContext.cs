@@ -9,7 +9,6 @@ namespace LenusTechTest
             : base(options)
         {
         }
-        public long IdCount { get; set; }
         public DbSet<Book> Books { get; set; }
     }
 }
