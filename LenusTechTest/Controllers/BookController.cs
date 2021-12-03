@@ -32,23 +32,11 @@ namespace LenusTechTest.Controllers
                     return Created("Created",  new { id = book.Id });
                 }
                 else
-                {
-                    return BadRequest(new { errors = new[]
-                        {
-                            new string[] { validBook }
-                        }
-                    });
-                }
+                    return BadRequest(GetErrors(new string[] { validBook }));
             }
             catch (Exception ex)
             {
-                return BadRequest(new
-                {
-                    errors = new[]
-                    {
-                        new string[] { ex.Message }
-                    }
-                });
+                return BadRequest(GetErrors(new string[] { ex.Message }));
             }
         }
 
@@ -74,13 +62,7 @@ namespace LenusTechTest.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new
-                {
-                    errors = new[]
-                    {
-                            new string[] { ex.Message }
-                        }
-                });
+                return BadRequest(GetErrors(new string[] { ex.Message }));
             }
         }
 
@@ -100,36 +82,14 @@ namespace LenusTechTest.Controllers
                         return Ok();
                     }
                     else
-                    {
-                        return NotFound(new
-                        {
-                            errors = new[]
-                            {
-                                new string[] { "Book with id " + id + " does not exist." }
-                            }
-                        });
-                    }
+                        return NotFound(GetErrors(new string[] { "Book with id " + id + " does not exist." }));
                 }
                 else
-                {
-                    return BadRequest(new
-                    {
-                        errors = new[]
-                        {
-                            new string[] { validBook }
-                        }
-                    });
-                }
+                    return BadRequest(GetErrors(new string[] { validBook }));
             }
             catch (Exception ex)
             {
-                return BadRequest(new
-                {
-                    errors = new[]
-                    {
-                        new string[] { ex.Message }
-                    }
-                });
+                return BadRequest(GetErrors(new string[] { ex.Message }));
             }
         }
 
@@ -141,23 +101,11 @@ namespace LenusTechTest.Controllers
                 if(BookExists(id))
                     return Ok(GetBookWithId(id));
                 else
-                    return NotFound(new
-                    {
-                        errors = new[]
-                        {
-                                new string[] { "Book with id " + id + " does not exist." }
-                            }
-                    });
+                    return NotFound(GetErrors(new string[] { "Book with id " + id + " does not exist." }));
             }
             catch (Exception ex)
             {
-                return BadRequest(new
-                {
-                    errors = new[]
-                    {
-                            new string[] { ex.Message }
-                        }
-                });
+                return BadRequest(GetErrors(new string[] { ex.Message }));
             }
         }
 
@@ -173,24 +121,20 @@ namespace LenusTechTest.Controllers
                     return Ok();
                 }
                 else
-                    return NotFound(new
-                    {
-                        errors = new[]
-                        {
-                            new string[] { "Book with id " + id + " does not exist." }
-                        }
-                    });
+                    return NotFound(GetErrors(new string[] { "Book with id " + id + " does not exist." }));
             }
             catch (Exception ex)
             {
-                return BadRequest(new
-                {
-                    errors = new[]
-                    {
-                            new string[] { ex.Message }
-                        }
-                });
+                return BadRequest(GetErrors(new string[] { ex.Message }));
             }
+        }
+
+        private object GetErrors(string[] errors)
+        {
+            return new
+            {
+                errors = errors
+            };
         }
 
         private Book GetBookWithId(long id)
