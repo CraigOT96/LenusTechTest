@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using LenusTechTest.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,50 +19,77 @@ namespace LenusTechTest.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddBook([FromBody] Book book)
+        public IActionResult AddBook(string title, string author, double price)
         {
             try
             {
+                Book book = new Book(GetNextId(), title, author, price);
                 string validBook = ValidateBook(book);
                 if (string.IsNullOrEmpty(validBook))
                 {
-                    book.Id = GetNextId();
                     _context.Books.Add(book);
                     _context.SaveChanges();
-                    return Ok();
+                    return Created("Created",  new { id = book.Id });
                 }
                 else
                 {
-                    return BadRequest(validBook);
+                    return BadRequest(new { errors = new[]
+                        {
+                            new string[] { validBook }
+                        }
+                    });
                 }
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new
+                {
+                    errors = new[]
+                    {
+                        new string[] { ex.Message }
+                    }
+                });
             }
         }
 
         [HttpGet]
-        public IActionResult GetBooks()
+        public IActionResult GetBooks([Optional] string sortby)
         {
             try
             {
-                return Ok(_context.Books
+                List<Book> books = _context.Books
                     .Select(x => new Book(x.Id, x.Author, x.Title, x.Price))
-                    .OrderBy(x => x.Title)
-                    .ToList());
+                    .ToList();
+                switch(sortby)
+                {
+                    case "title":
+                        return Ok(books.OrderBy(x => x.Title));
+                    case "author":
+                        return Ok(books.OrderBy(x => x.Author));
+                    case "price":
+                        return Ok(books.OrderBy(x => x.Price));
+                    default:
+                        return Ok(books.OrderBy(x => x.Title));
+                }
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new
+                {
+                    errors = new[]
+                    {
+                            new string[] { ex.Message }
+                        }
+                });
             }
         }
 
         [HttpPut("{id:long}")]
-        public IActionResult UpdateBook([FromRoute] long id, [FromBody] Book book)
+        public IActionResult UpdateBook([FromRoute] long id, string title, string author, double price)
         {
             try
             {
+                Book book = new Book(id, title, author, price);
                 string validBook = ValidateBook(book);
                 if(string.IsNullOrEmpty(validBook))
                 {
@@ -72,17 +101,35 @@ namespace LenusTechTest.Controllers
                     }
                     else
                     {
-                        return BadRequest("Book with id " + id + " does not exist.");
+                        return NotFound(new
+                        {
+                            errors = new[]
+                            {
+                                new string[] { "Book with id " + id + " does not exist." }
+                            }
+                        });
                     }
                 }
                 else
                 {
-                    return BadRequest(validBook);
+                    return BadRequest(new
+                    {
+                        errors = new[]
+                        {
+                            new string[] { validBook }
+                        }
+                    });
                 }
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new
+                {
+                    errors = new[]
+                    {
+                        new string[] { ex.Message }
+                    }
+                });
             }
         }
 
@@ -94,11 +141,23 @@ namespace LenusTechTest.Controllers
                 if(BookExists(id))
                     return Ok(GetBookWithId(id));
                 else
-                    return BadRequest("Book with id " + id + " does not exist.");
+                    return NotFound(new
+                    {
+                        errors = new[]
+                        {
+                                new string[] { "Book with id " + id + " does not exist." }
+                            }
+                    });
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new
+                {
+                    errors = new[]
+                    {
+                            new string[] { ex.Message }
+                        }
+                });
             }
         }
 
@@ -114,11 +173,23 @@ namespace LenusTechTest.Controllers
                     return Ok();
                 }
                 else
-                    return BadRequest("Book with id " + id + " does not exist.");
+                    return NotFound(new
+                    {
+                        errors = new[]
+                        {
+                            new string[] { "Book with id " + id + " does not exist." }
+                        }
+                    });
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new
+                {
+                    errors = new[]
+                    {
+                            new string[] { ex.Message }
+                        }
+                });
             }
         }
 
